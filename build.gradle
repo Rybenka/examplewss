@@ -1,0 +1,58 @@
+plugins {
+    id("io.gatling.gradle") version "3.7.0-M1"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("io.micronaut.application") version "1.5.4"
+}
+
+version = "0.1"
+group = "com.examplewss"
+
+repositories {
+    mavenCentral()
+}
+
+micronaut {
+    runtime("netty")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("com.examplewss.*")
+    }
+}
+
+dependencies {
+    annotationProcessor "io.micronaut.security:micronaut-security-annotations"
+    implementation("io.micronaut.security:micronaut-security-jwt")
+    implementation("io.micronaut:micronaut-http-client")
+    implementation("io.micronaut:micronaut-runtime")
+    implementation("javax.annotation:javax.annotation-api")
+    implementation("io.micronaut:micronaut-validation")
+    runtimeOnly("ch.qos.logback:logback-classic")
+
+}
+
+gatling {
+    // do not include classes and resources from src/main
+    includeMainOutput = false
+    // do not include classes and resources from src/test
+    includeTestOutput = false
+    simulations = {
+        include "**/*BasicSimulationCall.scala"
+    }
+}
+
+sourceSets {
+    gatling {
+        scala.srcDir "src/test/gatling/scala"
+        resources.srcDir "src/test/gatling/resources"
+    }
+}
+
+application {
+    mainClass.set("com.examplewss.Application")
+}
+
+java {
+    sourceCompatibility = JavaVersion.toVersion("11")
+    targetCompatibility = JavaVersion.toVersion("11")
+}

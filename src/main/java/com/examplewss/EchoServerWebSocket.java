@@ -31,6 +31,7 @@ public class EchoServerWebSocket {
     public void onOpen(WebSocketSession session, @Nullable @Header("Authorization") String authorization) {
         String msg = "{\"message\": \"Connection - OK\"}";
         session.put("CFG_MSG_NOT_EXIST", true);
+        LOG.info("New connection, sessionId: {}", session.getId());
         broadcaster.broadcastSync(msg, isValid(session));
     }
 
@@ -44,13 +45,14 @@ public class EchoServerWebSocket {
             String msg = "{\"message\": \"Config Frame - OK\"}";
             broadcaster.broadcastSync(msg, isValid(session));
         } else {
+            LOG.warn("Going to close connection for sessionId: {}", session.getId());
             session.close(CloseReason.UNSUPPORTED_DATA);
         }
     }
 
     @OnClose
     public void onClose(WebSocketSession session) {
-        LOG.info("Closed connection");
+        LOG.info("onClose event");
     }
 
     private Predicate<WebSocketSession> isValid(WebSocketSession session) {

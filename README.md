@@ -10,7 +10,13 @@
 
 - [Micronaut HTTP Client documentation](https://docs.micronaut.io/latest/guide/index.html#httpClient)
 
+## Requirements
+- Java 11
 
 ## Launch!
+- WebSocket server
 `./gradlew run`
+  
+- Gatling test
+`./gradlew gatlingRun -i`
 

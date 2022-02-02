@@ -46,13 +46,12 @@ public class EchoServerWebSocket {
             broadcaster.broadcastSync(msg, isValid(session));
         } else {
             LOG.warn("Going to close connection for sessionId: {}", session.getId());
-            session.close(CloseReason.UNSUPPORTED_DATA);
         }
     }
 
     @OnClose
-    public void onClose(WebSocketSession session) {
-        LOG.info("onClose event");
+    public void onClose(WebSocketSession session, CloseReason closeReason) {
+        LOG.info("onClose event, close code: {}", closeReason.getCode());
     }
 
     private Predicate<WebSocketSession> isValid(WebSocketSession session) {

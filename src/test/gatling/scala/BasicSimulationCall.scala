@@ -17,24 +17,16 @@ class BasicSimulationCall extends Simulation {
 
 
   def sendToWS = {
-      exec(
-        ws("WS Connect")
-          .connect("123/521beea1-2cd1-4fa3-b087-e862a39e1000/1")
-          .await(300.millis)(
-            ws.checkTextMessage("checkConnection")
-              .check(jsonPath("$.message").is("Connection - OK"))
-          )
-          .onConnected(
-            exec(
-              ws("Send Config Frame")
-                .sendText(s"{'ChannelId': 'ch-123', 'OperatorId': 'JohnDoe'}")
-                .await(500.second)(
-                  ws.checkTextMessage("checkCfgFrame")
-                    .check(jsonPath("$.message").is("Config Frame - OK"))
-                )
-            ).pause(500.millis)
-          )
-      )
+    exec(
+      ws("WS Connect")
+        .connect("123/521beea1-2cd1-4fa3-b087-e862a39e1000/1")
+        .onConnected(
+          exec(
+            ws("Send Config Frame")
+              .sendText(s"{'ChannelId': 'ch-123', 'OperatorId': 'JohnDoe'}")
+          ).pause(500.millis)
+        )
+    )
       .pause(1)
       .foreach(byteArray.grouped(chunkSize).toSeq, "packet") {
         exec(
@@ -46,10 +38,10 @@ class BasicSimulationCall extends Simulation {
       .exec(ws("Close WS").close)
   }
 
-    val scn = scenario("Web Socket test")
-      .exec(sendToWS)
+  val scn = scenario("Web Socket test")
+    .exec(sendToWS)
 
   setUp(
-        scn.inject(rampUsers(1).during(1)).protocols(httpProtocol)
+    scn.inject(rampUsers(1).during(1)).protocols(httpProtocol)
   )
 }
